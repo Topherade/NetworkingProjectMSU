@@ -18,40 +18,40 @@ LinkTable = [[  -1,   1,   1,   1,  50, 100, 250, 250, 250, 250],
              [ 250, 250, 250, 250, 100, 100,  25,  10,  -1,  10],
              [ 250, 250, 250, 250, 150, 100,  25,  25,  10,  -1]
             ]
-NodeNames = ['F22A','F22B','F22C','F22D','A400MA','A400MB','F35A','F35B','F35C','F35D']
 switchContainer = []
 
-class SingleSwitchTopo( Topo ):
+class ATN( Topo ):
     "Single switch connected to n hosts."
-    def build( self, n=len(NodeNames) ):
+    def build( self, n=len(LinkTable[0]) ):
         for h in range(n):
-            print(NodeNames[h])
             # Each host gets 50%/#numberOfNodes of system CPU
-            host = self.addHost( NodeNames[h],cpu=.5/n )
-            switch = self.addSwitch( 's' + NodeNames[h] )
+            host = self.addHost( 'h' + str(h+1),cpu=.5/n )
+            switch = self.addSwitch( 's' + str(h+1) )
             # 10 Mbps, 5ms delay, 1 loss packet, 1000 packet queue
             self.addLink( host, switch)
             i = 0
             for sw in switchContainer:
-                self.addLink( switch, sw, bw=10, delay= str(LinkTable[h][i])+'ms', loss=0, max_queue_size=1000, use_htb=True )
+                self.addLink( switch, sw)  #, bw=10, delay= str(LinkTable[h][i])+'ms', loss=0, max_queue_size=1000, use_htb=True 
                 i += 1
             switchContainer.append(switch)
 
 def perfTest():
     "Create network and run simple performance test"
-    topo = SingleSwitchTopo( n=len(NodeNames) )
+    topo = ATN( n=len(LinkTable[0]) )
     net = Mininet( topo=topo, controller = RemoteController,
                host=CPULimitedHost, link=TCLink )
-    net.start()
-    print "Dumping host connections"
-    dumpNodeConnections( net.hosts )
-    print "Testing network connectivity"
-    net.pingAll()
-    print "Testing bandwidth between h1 and h4"
-    h1, h4 = net.get( 'h1', 'h4' )
-    net.iperf( (h1, h4) )
+    #net.start()
+    #print "Dumping host connections"
+    #dumpNodeConnections( net.hosts )
+    #print "Testing network connectivity"
+    #net.pingAll()
+    #print "Testing bandwidth between h1 and h4"
+    #h1, h4 = net.get( 'h1', 'h4' )
+    #net.iperf( (h1, h4) )
     #net.stop()
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
     perfTest()
+
+topos = { 'ATN': ( lambda: ATN() ) }

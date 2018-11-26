@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- Mode: Python; tab-width: 4; coding: utf8 -*-
 #
 # Copyright 2015 Silvan Streit
@@ -20,16 +20,22 @@
 This openflow controller finds the paths between hosts given the topology.
 The corresponding flows are pushed to the switches on connection.
 This way loops can be taken care of and a loopless graph is created.
+
 For unknown packages, the following behavior can be selected: (mode)
+
 1) "static":        static switch, only use given network graph, 
                         other packages are ignored
 2) "hub":           simple hub, flood unknown packages
 3) "switch":        learning switch with flows pushed to the switch
+
 !! only static can handle networks with loops !!
+
 You can select the mode by specifing --mode=satic at the command line.
 Standard mode is static.
+
 The topology so far has to be hard coded and is selected by the command
 line via --topology=GoogleWAN
+
 Available topologies:
     GoogleWAN
     circle
@@ -450,8 +456,8 @@ def launch (mode = "static", topology = "None"):
                     no_learn=False)
     
     ## Load the given network
-    if TOPOLOGY == "GoogleWAN":
-        #GoogleWAN
+    if TOPOLOGY == "ATN":
+        #ATN
         hosts = {
                 1:host( 1),
                 2:host( 2),
@@ -477,61 +483,85 @@ def launch (mode = "static", topology = "None"):
                 10:switch(10),
             }
         links = [
-                (('sF22A',  1), ('F22A',   0)),
-                (('sF22A',  2), ('sF22B',  2)),
-                (('sF22A',  3), ('sF22C',  2)),
-                (('sF22A',  4), ('sF22D',  2)),
-                (('sF22A',  5), ('sA400MA',2)),
-                (('sF22A',  6), ('sA400MB',2)),
-                (('sF22A',  7), ('sF35A',  2)),
-                (('sF22A',  8), ('sF35B',  2)),
-                (('sF22A',  9), ('sF35C',  2)),
-                (('sF22A',  10),('sF35D',  2)),
-                (('sF22B',  1), ('F22B',   0)),
-                (('sF22B',  3), ('sF22C',  3)),
-                (('sF22B',  4), ('sF22D',  3)),
-                (('sF22B',  5), ('sA400MA',3)),
-                (('sF22B',  6), ('sA400MB',3)),
-                (('sF22B',  7), ('sF35A',  3)),
-                (('sF22B',  8), ('sF35B',  3)),
-                (('sF22B',  9), ('sF35C',  3)),
-                (('sF22B',  10),('sF35D',  3)),
-                (('sF22C',  1), ('F22C',   0)),
-                (('sF22C',  4), ('sF22D',  4)),
-                (('sF22C',  5), ('sA400MA',4)),
-                (('sF22C',  6), ('sA400MB',4)),
-                (('sF22C',  7), ('sF35A',  4)),
-                (('sF22C',  8), ('sF35B',  4)),
-                (('sF22C',  9), ('sF35C',  4)),
-                (('sF22C',  10),('sF35D',  4)),
-                (('sF22D',  1), ('F22D',   0)),
-                (('sF22D',  5), ('sA400MA',5)),
-                (('sF22D',  6), ('sA400MB',5)),
-                (('sF22D',  7), ('sF35A',  5)),
-                (('sF22D',  8), ('sF35B',  5)),
-                (('sF22D',  9), ('sF35C',  5)),
-                (('sF22D',  10),('sF35D',  5)),
-                (('sA400MA',  1), ('A400MA', 0)),
-                (('sA400MA',  6), ('sA400MB',6)),
-                (('sA400MA',  7), ('sF35A',  6)),
-                (('sA400MA',  8), ('sF35B',  6)),
-                (('sA400MA',  9), ('sF35C',  6)),
-                (('sA400MA',  10),('sF35D',  6)),
-                (('sA400MB',  1), ('A400MB', 0)),
-                (('sA400MB',  7), ('sF35A',  7)),
-                (('sA400MB',  8), ('sF35B',  7)),
-                (('sA400MB',  9), ('sF35C',  7)),
-                (('sA400MB',  10),('sF35D',  7)),
-                (('sF35A',  1), ('F35A', 0)),
-                (('sF35A',  8), ('sF35B',  8)),
-                (('sF35A',  9), ('sF35C',  8)),
-                (('sF35A',  10),('sF35D',  8)),
-                (('sF35B',  1), ('F35B', 0)),
-                (('sF35B',  9), ('sF35C',  9)),
-                (('sF35B',  10),('sF35D',  9)),
-                (('sF35C',  1), ('F35C', 0)),
-                (('sF35C',  10),('sF35D',  10)),
-                (('sF35D',  1), ('F35D', 0)),
+                (('s1',  1), ('h1',   0)),
+                (('s1',  2), ('s2',  2)),
+                (('s1',  3), ('s3',  2)),
+                (('s1',  4), ('s4',  2)),
+                (('s1',  5), ('s5',2)),
+                (('s1',  6), ('s6',2)),
+                (('s1',  7), ('s7',  2)),
+                (('s1',  8), ('s8',  2)),
+                (('s1',  9), ('s9',  2)),
+                (('s1',  10),('s10',  2)),
+                (('s2',  1), ('h2',   0)),
+                (('s2',  3), ('s3',  3)),
+                (('s2',  4), ('s4',  3)),
+                (('s2',  5), ('s5',3)),
+                (('s2',  6), ('s6',3)),
+                (('s2',  7), ('s7',  3)),
+                (('s2',  8), ('s8',  3)),
+                (('s2',  9), ('s9',  3)),
+                (('s2',  10),('s10',  3)),
+                (('s3',  1), ('h3',   0)),
+                (('s3',  4), ('s4',  4)),
+                (('s3',  5), ('s5',4)),
+                (('s3',  6), ('s6',4)),
+                (('s3',  7), ('s7',  4)),
+                (('s3',  8), ('s8',  4)),
+                (('s3',  9), ('s9',  4)),
+                (('s3',  10),('s10',  4)),
+                (('s4',  1), ('h4',   0)),
+                (('s4',  5), ('s5',5)),
+                (('s4',  6), ('s6',5)),
+                (('s4',  7), ('s7',  5)),
+                (('s4',  8), ('s8',  5)),
+                (('s4',  9), ('s9',  5)),
+                (('s4',  10),('s10',  5)),
+                (('s5',  1), ('h5', 0)),
+                (('s5',  6), ('s6',6)),
+                (('s5',  7), ('s7',  6)),
+                (('s5',  8), ('s8',  6)),
+                (('s5',  9), ('s9',  6)),
+                (('s5',  10),('s10',  6)),
+                (('s6',  1), ('h6', 0)),
+                (('s6',  7), ('s7',  7)),
+                (('s6',  8), ('s8',  7)),
+                (('s6',  9), ('s9',  7)),
+                (('s6',  10),('s10',  7)),
+                (('s7',  1), ('h7', 0)),
+                (('s7',  8), ('s8',  8)),
+                (('s7',  9), ('s9',  8)),
+                (('s7',  10),('s10',  8)),
+                (('s8',  1), ('h8', 0)),
+                (('s8',  9), ('s9',  9)),
+                (('s8',  10),('s10',  9)),
+                (('s9',  1), ('h9', 0)),
+                (('s9',  10),('s10',  10)),
+                (('s10',  1), ('h10', 0)),
+            ]
+    elif TOPOLOGY == "circle":
+        #Circle topology (1 loop)
+        hosts = {
+                1:host( 1),
+                2:host( 2),
+                3:host( 3),
+                4:host( 4),
+            }
+        switches = {
+                1:switch( 1),
+                2:switch( 2),
+                3:switch( 3),
+                4:switch( 4),
+            }
+        links = [
+                (('s1',  1), ('h1',  0)),
+                (('s2',  1), ('h2',  0)),
+                (('s3',  1), ('h3',  0)),
+                (('s4',  1), ('h4',  0)),
+                (('s1',  2), ('s2',  2)),
+                (('s1',  3), ('s3',  2)),
+                (('s2',  3), ('s4',  2)),
+                (('s3',  3), ('s4',  3)),
             ]
     else:
         hosts = {}
