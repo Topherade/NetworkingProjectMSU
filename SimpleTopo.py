@@ -31,7 +31,7 @@ class ATN( Topo ):
             self.addLink( host, switch)
             i = 0
             for sw in switchContainer:
-                self.addLink( switch, sw)  #, bw=10, delay= str(LinkTable[h][i])+'ms', loss=0, max_queue_size=1000, use_htb=True 
+                self.addLink( switch, sw , bw=10, delay= str(LinkTable[h][i])+'ms', loss=0, max_queue_size=1000, use_htb=False )
                 i += 1
             switchContainer.append(switch)
 
@@ -41,13 +41,16 @@ def perfTest():
     net = Mininet( topo=topo, controller = RemoteController,
                host=CPULimitedHost, link=TCLink )
     #net.start()
-    #print "Dumping host connections"
-    #dumpNodeConnections( net.hosts )
-    #print "Testing network connectivity"
+    #print "Dumping switch connections"
+    #dumpNodeConnections( net.switches )
+    #print "Testing basic network connectivity"
+    #h1, h2 = net.get( 'h1', 'h2' )
+    #net.ping((h1,h2))
+    #print "pinging all"
     #net.pingAll()
-    #print "Testing bandwidth between h1 and h4"
-    #h1, h4 = net.get( 'h1', 'h4' )
-    #net.iperf( (h1, h4) )
+    #print "Testing bandwidth between F22A and F35B"
+    #h1, h10 = net.get( 'h1', 'h10' )
+    #net.iperf( (h1, h10) )
     #net.stop()
 
 if __name__ == '__main__':
