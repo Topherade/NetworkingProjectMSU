@@ -46,7 +46,7 @@ from pox.core import core
 import pox.openflow.libopenflow_01 as of
 from pox.lib.addresses import EthAddr
 import pox.proto.arp_responder as arp
-
+import time
 log = core.getLogger()
 MODE = "static"
 TOPOLOGY = "None"
@@ -65,6 +65,8 @@ class switch(object):
         self.flows = []
 
 
+    
+    
     def port_to(self, dpid):
         "Returns the port which connects to the switch with the given dpid."
         for port, device in self.port_to_connected_devices.iteritems():
@@ -120,6 +122,7 @@ class switch(object):
                             #combine the two (reverse one)
                             for link in reversed(oc):
                                 nc.append( (link[1],link[0]) )
+
                             network.paths.append(nc) # save to final list
                             log.debug('Found new path @ switch {s}: '\
                                 '{p}'.
@@ -334,6 +337,7 @@ class network(object):
         log.debug("The following paths were found int the topology {t}: {p}".
                         format(t=TOPOLOGY,p=self.paths))
     
+    
     def is_switch(self,devid):
         "Checks if devid points to an existing switch."
         if isinstance(devid,str):
@@ -406,6 +410,8 @@ class network(object):
         used_switches = []
         cuts = set()
         for link in cn:
+            print "Link Print Here ************************************************************************"
+            print link
             if link[1][0] in used_switches:
                 c_low = [i for i,x in enumerate(used_switches)\
                             if x == link[1][0]][0]
@@ -432,7 +438,6 @@ class network(object):
             self.switches[event.connection.dpid].connect(event.connection)
             log.info("New unknown switch {:2} has connected.".
                         format(event.dpid))
-
 
 
 
@@ -483,61 +488,61 @@ def launch (mode = "static", topology = "None"):
                 10:switch(10),
             }
         links = [
-                (('s1',  1), ('h1',   0)),
-                (('s1',  2), ('s2',  2)),
-                (('s1',  3), ('s3',  2)),
-                (('s1',  4), ('s4',  2)),
-                (('s1',  5), ('s5',2)),
-                (('s1',  6), ('s6',2)),
-                (('s1',  7), ('s7',  2)),
-                (('s1',  8), ('s8',  2)),
-                (('s1',  9), ('s9',  2)),
-                (('s1',  10),('s10',  2)),
-                (('s2',  1), ('h2',   0)),
-                (('s2',  3), ('s3',  3)),
-                (('s2',  4), ('s4',  3)),
-                (('s2',  5), ('s5',3)),
-                (('s2',  6), ('s6',3)),
-                (('s2',  7), ('s7',  3)),
-                (('s2',  8), ('s8',  3)),
-                (('s2',  9), ('s9',  3)),
-                (('s2',  10),('s10',  3)),
-                (('s3',  1), ('h3',   0)),
-                (('s3',  4), ('s4',  4)),
-                (('s3',  5), ('s5',4)),
-                (('s3',  6), ('s6',4)),
-                (('s3',  7), ('s7',  4)),
-                (('s3',  8), ('s8',  4)),
-                (('s3',  9), ('s9',  4)),
-                (('s3',  10),('s10',  4)),
-                (('s4',  1), ('h4',   0)),
-                (('s4',  5), ('s5',5)),
-                (('s4',  6), ('s6',5)),
-                (('s4',  7), ('s7',  5)),
-                (('s4',  8), ('s8',  5)),
-                (('s4',  9), ('s9',  5)),
-                (('s4',  10),('s10',  5)),
-                (('s5',  1), ('h5', 0)),
-                (('s5',  6), ('s6',6)),
-                (('s5',  7), ('s7',  6)),
-                (('s5',  8), ('s8',  6)),
-                (('s5',  9), ('s9',  6)),
-                (('s5',  10),('s10',  6)),
-                (('s6',  1), ('h6', 0)),
-                (('s6',  7), ('s7',  7)),
-                (('s6',  8), ('s8',  7)),
-                (('s6',  9), ('s9',  7)),
-                (('s6',  10),('s10',  7)),
-                (('s7',  1), ('h7', 0)),
-                (('s7',  8), ('s8',  8)),
-                (('s7',  9), ('s9',  8)),
-                (('s7',  10),('s10',  8)),
-                (('s8',  1), ('h8', 0)),
-                (('s8',  9), ('s9',  9)),
-                (('s8',  10),('s10',  9)),
-                (('s9',  1), ('h9', 0)),
-                (('s9',  10),('s10',  10)),
-                (('s10',  1), ('h10', 0)),
+                (('s1',  1), ('h1',   0)) 1,
+                (('s1',  2), ('s2',  2)) 1,
+                (('s1',  3), ('s3',  2)) 1,
+                (('s1',  4), ('s4',  2)) 1,
+                (('s1',  5), ('s5',2)) 50,
+                (('s1',  6), ('s6',2)) 100,
+                (('s1',  7), ('s7',  2)) 250,
+                (('s1',  8), ('s8',  2)) 250,
+                (('s1',  9), ('s9',  2)) 250,
+                (('s1',  10),('s10',  2)) 250,
+                (('s2',  1), ('h2',   0)) 1,
+                (('s2',  3), ('s3',  3)) 1,
+                (('s2',  4), ('s4',  3)) 1,
+                (('s2',  5), ('s5',3)) 1,
+                (('s2',  6), ('s6',3)) 50,
+                (('s2',  7), ('s7',  3)) 250,
+                (('s2',  8), ('s8',  3))250,
+                (('s2',  9), ('s9',  3))250,
+                (('s2',  10),('s10',  3))250,
+                (('s3',  1), ('h3',   0))1,
+                (('s3',  4), ('s4',  4))1,
+                (('s3',  5), ('s5',4))150,
+                (('s3',  6), ('s6',4))100,
+                (('s3',  7), ('s7',  4))250,
+                (('s3',  8), ('s8',  4))250,
+                (('s3',  9), ('s9',  4))250,
+                (('s3',  10),('s10',  4))250,
+                (('s4',  1), ('h4',   0))1,
+                (('s4',  5), ('s5',5))100,
+                (('s4',  6), ('s6',5))100,
+                (('s4',  7), ('s7',  5))250,
+                (('s4',  8), ('s8',  5))250,
+                (('s4',  9), ('s9',  5))250,
+                (('s4',  10),('s10',  5))250,
+                (('s5',  1), ('h5', 0))1,
+                (('s5',  6), ('s6',6))1,
+                (('s5',  7), ('s7',  6))1,
+                (('s5',  8), ('s8',  6))50,
+                (('s5',  9), ('s9',  6))100,
+                (('s5',  10),('s10',  6))150,
+                (('s6',  1), ('h6', 0))1,
+                (('s6',  7), ('s7',  7))50,
+                (('s6',  8), ('s8',  7))100,
+                (('s6',  9), ('s9',  7))100,
+                (('s6',  10),('s10',  7))100,
+                (('s7',  1), ('h7', 0))1,
+                (('s7',  8), ('s8',  8))10,
+                (('s7',  9), ('s9',  8))25,
+                (('s7',  10),('s10',  8))25,
+                (('s8',  1), ('h8', 0))1,
+                (('s8',  9), ('s9',  9))10,
+                (('s8',  10),('s10',  9))25,
+                (('s9',  1), ('h9', 0))1,
+                (('s9',  10),('s10',  10))10,
+                (('s10',  1), ('h10', 0))1,
             ]
     elif TOPOLOGY == "circle":
         #Circle topology (1 loop)
