@@ -50,7 +50,6 @@ import time
 log = core.getLogger()
 MODE = "static"
 TOPOLOGY = "None"
-LinkTable = []
 
 class switch(object):
     "Represents a controlled switch in a network."
@@ -458,7 +457,7 @@ def launch (mode = "static", topology = "None"):
                     no_learn=False)
     
     ## Load the given network
-    if TOPOLOGY == "ATN":
+    if TOPOLOGY == "ATN1":
         #ATN
         hosts = {
                 1:host( 1),
@@ -484,9 +483,7 @@ def launch (mode = "static", topology = "None"):
                 9:switch( 9),
                 10:switch(10),
             }
-        links = []
-        addedDevices = []
-        LinkTable = [
+        links = [
                 (('s1',  1), ('h1',   0), 1),
                 (('s1',  2), ('s2',  2), 1),
                 (('s1',  3), ('s3',  2), 1),
@@ -543,46 +540,182 @@ def launch (mode = "static", topology = "None"):
                 (('s9',  10),('s10',  10),10),
                 (('s10',  1), ('h10', 0),1),
             ]
-        print 'hello'
-        LinkTable = sorted(LinkTable, key=lambda Link: Link[2]) 
-        for link in LinkTable:
-            if 'h' in link[0][0] or 'h' in link[1][0]:
-                links.append(link[:2])
-            elif link[0][0] not in addedDevices or link [1][0] not in addedDevices:
-                links.append(link[:2])
-                if link[0][0] not in addedDevices:
-                    addedDevices.append(link[0][0])
-                if link [1][0] not in addedDevices:
-                    addedDevices.append(link[1][0])
-        print links
-    elif TOPOLOGY == "circle":
-        #Circle topology (1 loop)
+        links = antiJammingAlgo(links)
+    elif TOPOLOGY == "ATN2":
+        #ATN
         hosts = {
                 1:host( 1),
                 2:host( 2),
                 3:host( 3),
                 4:host( 4),
+                5:host( 5),
+                6:host( 6),
+                7:host( 7),
+                8:host( 8),
+                9:host( 9),
+                10:host(10),
             }
         switches = {
                 1:switch( 1),
                 2:switch( 2),
                 3:switch( 3),
                 4:switch( 4),
+                5:switch( 5),
+                6:switch( 6),
+                7:switch( 7),
+                8:switch( 8),
+                9:switch( 9),
+                10:switch(10),
             }
         links = [
-                (('s1',  1), ('h1',  0)),
-                (('s2',  1), ('h2',  0)),
-                (('s3',  1), ('h3',  0)),
-                (('s4',  1), ('h4',  0)),
-                (('s1',  2), ('s2',  2)),
-                (('s1',  3), ('s3',  2)),
-                (('s2',  3), ('s4',  2)),
-                (('s3',  3), ('s4',  3)),
+                (('s1',  1), ('h1',   0), 1),
+                (('s1',  2), ('s2',  2), 1),
+                (('s1',  3), ('s3',  2), 1),
+                (('s1',  4), ('s4',  2), 1),
+                (('s1',  5), ('s6',2), 100),
+                (('s1',  6), ('s7',  2), 250),
+                (('s1',  7), ('s8',  2), 250),
+                (('s1',  8), ('s9',  2), 250),
+                (('s1',  9),('s10',  2), 250),
+                (('s2',  1), ('h2',   0), 1),
+                (('s2',  3), ('s3',  3),1),
+                (('s2',  4), ('s4',  3), 1),
+                (('s2',  5), ('s6',3),50),
+                (('s2',  6), ('s7',  3), 250),
+                (('s2',  7), ('s8',  3),250),
+                (('s2',  8), ('s9',  3),250),
+                (('s2',  9),('s10',  3),250),
+                (('s3',  1), ('h3',   0),1),
+                (('s3',  4), ('s4',  4),1),
+                (('s3',  5), ('s6',4),100),
+                (('s3',  6), ('s7',  4),250),
+                (('s3',  7), ('s8',  4),250),
+                (('s3',  8), ('s9',  4),250),
+                (('s3',  9),('s10',  4),250),
+                (('s4',  1), ('h4',   0),1),
+                (('s4',  5), ('s6',5),100),
+                (('s4',  6), ('s7',  5),250),
+                (('s4',  7), ('s8',  5),250),
+                (('s4',  8), ('s9',  5),250),
+                (('s4',  9),('s10',  5),250),
+                (('s5',  1), ('h5', 0),1),
+                (('s6',  1), ('h6', 0),1),
+                (('s6',  6), ('s7',  6),50),
+                (('s6',  7), ('s8',  6),100),
+                (('s6',  8), ('s9',  6),100),
+                (('s6',  9),('s10',  6),100),
+                (('s7',  1), ('h7', 0),1),
+                (('s7',  7), ('s8',  7),10),
+                (('s7',  8), ('s9',  7),25),
+                (('s7',  9),('s10',  7),25),
+                (('s8',  1), ('h8', 0),1),
+                (('s8',  8), ('s9',  8),10),
+                (('s8',  9),('s10',  8),25),
+                (('s9',  1), ('h9', 0),1),
+                (('s9',  9),('s10',  9),10),
+                (('s10',  1), ('h10', 0),1),
             ]
+        links = antiJammingAlgo(links)
+    elif TOPOLOGY == "ATN3":
+        #ATN
+        hosts = {
+                1:host( 1),
+                2:host( 2),
+                3:host( 3),
+                4:host( 4),
+                5:host( 5),
+                6:host( 6),
+                7:host( 7),
+                8:host( 8),
+                9:host( 9),
+                10:host(10),
+            }
+        switches = {
+                1:switch( 1),
+                2:switch( 2),
+                3:switch( 3),
+                4:switch( 4),
+                5:switch( 5),
+                6:switch( 6),
+                7:switch( 7),
+                8:switch( 8),
+                9:switch( 9),
+                10:switch(10),
+            }
+        links = [
+                (('s1',  1), ('h1',  0), 1),
+                (('s1',  2), ('s3',  2), 1),
+                (('s1',  3), ('s4',  2), 1),
+                (('s1',  4), ('s6',  2), 100),
+                (('s1',  5), ('s8',  2), 250),
+                (('s1',  6), ('s9',  2), 250),
+                (('s1',  7),('s10',  2), 250),
+                (('s2',  1), ('h2',  0), 1),
+                (('s3',  1), ('h3',  0),1),
+                (('s3',  3), ('s4',  3),1),
+                (('s3',  3), ('s6',  3),100),
+                (('s3',  3), ('s8',  3),250),
+                (('s3',  3), ('s9',  3),250),
+                (('s3',  3),('s10',  3),250),
+                (('s4',  1), ('h4',  0),1),
+                (('s4',  4), ('s6',  4),100),
+                (('s4',  4), ('s8',  4),250),
+                (('s4',  4), ('s9',  4),250),
+                (('s4',  4),('s10',  4),250),
+                (('s5',  1), ('h5',  0),1),
+                (('s6',  1), ('h6',  0),1),
+                (('s6',  5), ('s8',  5),100),
+                (('s6',  5), ('s9',  5),100),
+                (('s6',  5),('s10',  5),100),
+                (('s7',  1), ('h7',  0),1),
+                (('s8',  1), ('h8',  0),1),
+                (('s8',  6), ('s9',  6),10),
+                (('s8',  6),('s10',  6),25),
+                (('s9',  1), ('h9',  0),1),
+                (('s9',  7),('s10',  7),10),
+                (('s10',  1), ('h10',0),1),
+            ]
+        links = antiJammingAlgo(links)
     else:
         hosts = {}
         switches = {}
         links = []
-    
+    print "printing topology ********************************************"
+    print links
+    print "end of topology******************"
     # enable network (executes network.__init__(switches,hosts,links))
     core.registerNew(network,switches,hosts,links)
+def antiJammingAlgo(LinkTable):
+    links = []
+    addedDevices = []
+    LinkTable = sorted(LinkTable, key=lambda Link: Link[2]) 
+    listNotFinished = True
+    firstLink = True
+    while(listNotFinished):
+        listNotFinished = False
+        for link in LinkTable:
+            if 'h' in link[0][0] or 'h' in link[1][0]:
+                if 'h' in link[0][0] and link[0][0] not in addedDevices:
+                    links.append(link[:2])
+                    addedDevices.append(link[0][0])
+                elif 'h' in link[1][0] and link[1][0] not in addedDevices:
+                    links.append(link[:2])
+                    addedDevices.append(link[1][0])
+            elif (link[0][0] not in addedDevices and link[1][0] in addedDevices) or ( link [1][0] not in addedDevices and link[0][0] in addedDevices) or (firstLink and (link[0][0] not in addedDevices or link [1][0] not in addedDevices)):
+                links.append(link[:2])
+                if(firstLink):
+                    firstLink = False
+                    addedDevices.append(link[0][0])
+                    addedDevices.append(link[1][0])
+                    listNotFinished = True
+                    break
+                if link[0][0] not in addedDevices:
+                    addedDevices.append(link[0][0])
+                    listNotFinished = True
+                    break
+                if link [1][0] not in addedDevices:
+                    addedDevices.append(link[1][0])
+                    listNotFinished = True
+                    break
+    return links
+    
